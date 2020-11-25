@@ -1,0 +1,4 @@
+bitfinex-api-py==1.1.8
+pyee==7.0.4
+python-dotenv==0.15.0
+twilio==6.48.0
