@@ -3,8 +3,8 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-API_KEY = os.getenv('BFX_API_KEY')
-API_SECRET = os.getenv('BFX_API_SECRET')
+BFX_API_KEY = os.getenv('BFX_API_KEY')
+BFX_API_SECRET = os.getenv('BFX_API_SECRET')
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_FROM_NUMBER = os.getenv('TWILIO_FROM_NUMBER')

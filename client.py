@@ -1,19 +1,18 @@
 import asyncio
 import time
-import utils
-from bfxapi import Client as BfxClient
-from settings import *
 from statistics import mean
-from twilio.rest import Client as TwilioClient
+
+from bfxapi import Client as BfxClient
+
+from settings import *
+from utils import datetime_utils, misc_utils
 
 bfx = BfxClient(
-    API_KEY=API_KEY,
-    API_SECRET=API_SECRET,
-    logLevel='WARNING',
+    API_KEY=BFX_API_KEY,
+    API_SECRET=BFX_API_SECRET,
+    logLevel='ERROR',
     max_retries=10000
 )
-
-twilio_client = TwilioClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 
 @bfx.ws.on('authenticated')
@@ -37,25 +36,10 @@ async def monitor(self):
             for order in orders:
                 side = 'buy' if order.amount > 0 else 'sell'
                 mts_create = order.mts_create
-                age_string = utils.ms_to_age_string(time.time() * 1000 - mts_create)
+                age_string = datetime_utils.ms_to_age_string(time.time() * 1000 - mts_create)
                 print(f'{side} at {order.price}, age: {age_string}')
         except Exception:
             pass
-
-
-def send_twilio_test_message(message1, message2):
-    message = 'Your {} code is {}'.format(message1, message2)
-    twilio_client.messages.create(
-        from_=f'whatsapp:{TWILIO_FROM_NUMBER}',
-        body=message,
-        to=f'whatsapp:{WHATSAPP_TO_NUMBER}'
-    )
-
-
-def calculate_gradient_weight_function(x):
-    a = CANDLE_GRADIENT_WEIGHT_FUNCTION_A
-    b = CANDLE_GRADIENT_WEIGHT_FUNCTION_B
-    return (a * x + b) / 100
 
 
 async def alert_on_fast_price_increase():
@@ -72,10 +56,11 @@ async def alert_on_fast_price_increase():
 
         last_candle = price_gradients[0]
         for i, price_gradient in enumerate(price_gradients):
-            threshold = calculate_gradient_weight_function(i)
+            threshold = misc_utils.calculate_gradient_weight_function(i)
 
             if price_gradient > threshold and last_candle > LATEST_CANDLE_MINIMUM / 100:
-                send_twilio_test_message(f'last {i + 1} candles are up {round(price_gradient * 100, 2)}%', '🥳')
+                misc_utils.send_twilio_test_message(f'last {i + 1} candles are up {round(price_gradient * 100, 2)}%',
+                                                    '🥳')
                 break
         time.sleep(CANDLE_TIME_FRAME * 60)
 
@@ -86,4 +71,4 @@ async def restart(self):
 
 
 bfx.ws.run()
-send_twilio_test_message(f'app started', '🥳')
+misc_utils.send_twilio_test_message(f'app started', '🥳')
