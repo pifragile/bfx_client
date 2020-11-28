@@ -1,4 +1,3 @@
-import asyncio
 import time
 from statistics import mean
 
@@ -14,6 +13,7 @@ bfx = BfxClient(
     max_retries=10000
 )
 
+latest_candle_processed = None
 
 @bfx.ws.on('authenticated')
 async def subscribe(self):
@@ -21,8 +21,6 @@ async def subscribe(self):
     await bfx.ws.subscribe_trades(PAIR_SYMBOL)
     await bfx.ws.subscribe_order_book(PAIR_SYMBOL)
     await bfx.ws.subscribe_candles(PAIR_SYMBOL, f'{CANDLE_TIME_FRAME}m')
-    if ALERTS_ACTIVE:
-        asyncio.ensure_future(alert_on_fast_price_increase())
 
 
 @bfx.ws.on('new_trade')
@@ -42,10 +40,18 @@ async def monitor(self):
             pass
 
 
-async def alert_on_fast_price_increase():
-    while True:
+@bfx.ws.on('new_trade')
+async def alert_on_fast_price_increase(trade):
+    global latest_candle_processed
+    if ALERTS_ACTIVE:
         candles = await bfx.rest.get_public_candles(PAIR_SYMBOL, None, None, tf=f'{CANDLE_TIME_FRAME}m',
-                                                    limit=f'{CANDLE_LOOK_BACK}')
+                                                    limit=f'{CANDLE_LOOK_BACK + 1}')
+
+        candles = candles[1:]
+        if candles[0] == latest_candle_processed:
+            return
+
+        latest_candle_processed = candles[0]
         # candle format: [mts, open_price, close_price, high, low, volume]
         price_increases = [candle[2] / candle[1] - 1 for candle in candles]
         price_gradients = []
@@ -62,7 +68,6 @@ async def alert_on_fast_price_increase():
                 misc_utils.send_twilio_test_message(f'last {i + 1} candles are up {round(price_gradient * 100, 2)}%',
                                                     '🥳')
                 break
-        time.sleep(CANDLE_TIME_FRAME * 60)
 
 
 @bfx.ws.on('error')
