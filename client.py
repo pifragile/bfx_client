@@ -1,3 +1,4 @@
+import datetime
 import time
 from statistics import mean
 
@@ -50,12 +51,11 @@ async def alert_on_fast_price_increase(trade):
         candles = candles[1:]
         if candles[0] == latest_candle_processed:
             return
-
         latest_candle_processed = candles[0]
         # candle format: [mts, open_price, close_price, high, low, volume]
         price_increases = [candle[2] / candle[1] - 1 for candle in candles]
         price_gradients = []
-
+        print(f'{datetime.datetime.now()}: {price_increases}')
         # calculate the average price increase for the last i candles
         for i, _ in enumerate(price_increases):
             price_gradients.append(mean(price_increases[:i + 1]))
