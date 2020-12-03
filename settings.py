@@ -29,3 +29,10 @@ LATEST_CANDLE_MINIMUM = 0.1
 # increase of more than 0.5% an alert will be triggered
 CANDLE_GRADIENT_WEIGHT_FUNCTION_A = -0.085
 CANDLE_GRADIENT_WEIGHT_FUNCTION_B = 0.7
+
+# email
+EMAIL_HOST = 'send.one.com'
+EMAIL_PORT = 587
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASS")
+EMAIL_RECEIVER = os.getenv("EMAIL_RECEIVER")

@@ -18,6 +18,10 @@ bfx = BfxClient(
 latest_candle_processed = None
 
 
+def send_alert_email(subject, message):
+    misc_utils.send_email(subject, message, EMAIL_RECEIVER, 'bfx alert')
+
+
 async def alert_on_fast_price_increase():
     global latest_candle_processed
     if ALERTS_ACTIVE:
@@ -46,11 +50,11 @@ async def alert_on_fast_price_increase():
                     threshold = misc_utils.calculate_gradient_weight_function(i)
 
                     if price_gradient > threshold and last_candle > LATEST_CANDLE_MINIMUM / 100:
-                        misc_utils.send_twilio_test_message(
-                            f'last {i + 1} candles are up {round(price_gradient * 100, 2)}%', '🥳')
+                        alert_string = f'last {i + 1} candles are up {round(price_gradient * 100, 2)}% 🥳'
+                        send_alert_email(alert_string, alert_string)
                         break
             time.sleep(10)
 
 
-misc_utils.send_twilio_test_message(f'app starting', '🥳')
+send_alert_email('app starting', 'app starting')
 asyncio.run(alert_on_fast_price_increase())
