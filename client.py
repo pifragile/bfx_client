@@ -49,7 +49,7 @@ async def alert_on_fast_price_increase():
                 for i, price_gradient in enumerate(price_gradients):
                     threshold = misc_utils.calculate_gradient_weight_function(i)
 
-                    if price_gradient > threshold and last_candle > LATEST_CANDLE_MINIMUM / 100:
+                    if price_gradient > threshold and last_candle > LATEST_CANDLE_MINIMUM:
                         alert_string = f'last {i + 1} candles are up {round(price_gradient * 100, 2)}% 🥳'
                         send_alert_email(alert_string, alert_string)
                         break

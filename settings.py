@@ -18,9 +18,9 @@ PAIR_SYMBOL = 'tBTCUSD'
 CANDLE_TIME_FRAME = 5  # minutes
 # number of candles in the to consider for fast price increase alerts
 CANDLE_LOOK_BACK = 5
-# minimum price increase in % of the latest candle necessary to trigger an alert
+# minimum price increase in %(0-1) of the latest candle necessary to trigger an alert
 # used to prevent alerts for increases in the past
-LATEST_CANDLE_MINIMUM = 0.1
+LATEST_CANDLE_MINIMUM = 0.001
 
 # list that indicates the price increases of latest candles necessary to trigger an alert
 # eg. l=[0.006,0.005] triggers alert when last candle is up 0.6% or when last 2 candles are up 0.5% on average
