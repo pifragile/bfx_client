@@ -22,13 +22,10 @@ CANDLE_LOOK_BACK = 5
 # used to prevent alerts for increases in the past
 LATEST_CANDLE_MINIMUM = 0.1
 
-# parameters of a linear function f(x) = ax+b, where f(#candles in the past) determines the average price increase
-# of each candle necessary to trigger an alert
-# example: a=-0.1 b=0.7, so f(0)=0.7 and f(1)=0.5
-# so if the last candle had a price increase of more than 0.7% OR the last 2 candles had more than an average price
-# increase of more than 0.5% an alert will be triggered
-CANDLE_GRADIENT_WEIGHT_FUNCTION_A = -0.085
-CANDLE_GRADIENT_WEIGHT_FUNCTION_B = 0.7
+# list that indicates the price increases of latest candles necessary to trigger an alert
+# eg. l=[0.006,0.005] triggers alert when last candle is up 0.6% or when last 2 candles are up 0.5% on average
+CANDLE_GRADIENT_THRESHOLDS = [float(x) for x in os.getenv('CANDLE_GRADIENT_THRESHOLDS').split(',')]
+CANDLE_GRADIENT_THRESHOLDS_DEFAULT = os.getenv('CANDLE_GRADIENT_THRESHOLDS_DEFAULT')
 
 # email
 EMAIL_HOST = 'send.one.com'

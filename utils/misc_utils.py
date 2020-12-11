@@ -20,9 +20,8 @@ def send_twilio_test_message(message1, message2):
 
 
 def calculate_gradient_weight_function(x):
-    a = settings.CANDLE_GRADIENT_WEIGHT_FUNCTION_A
-    b = settings.CANDLE_GRADIENT_WEIGHT_FUNCTION_B
-    return (a * x + b) / 100
+    lut = {idx: value for idx, value in enumerate(settings.CANDLE_GRADIENT_THRESHOLDS)}
+    return lut.get(x, settings.CANDLE_GRADIENT_THRESHOLDS_DEFAULT)
 
 
 def send_email(subject, msg, to, from_name):
